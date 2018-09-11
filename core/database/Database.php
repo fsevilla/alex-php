@@ -2,7 +2,7 @@
 
 namespace Core\Database;
 
-class Model {
+class DatabaseModel {
 
   private static $instance = NULL;
 
@@ -29,7 +29,7 @@ class Model {
   {
     if(!self::$instance)
     {
-      self::$instance = new Model();
+      self::$instance = new DatabaseModel();
     }
 
     return self::$instance;
@@ -50,13 +50,17 @@ class Model {
   private function initDB()
   {
     $conf = $this->config;
-    $this->connection = $this->driver->connect($conf['host'], $conf['username'], $conf['password']);
+    $host = $conf['host'].":".$conf['port'];
+    $this->connection = $this->driver->connect($host, $conf['username'], $conf['password']);
 
     if($this->connection)
     {
       $this->db = $this->driver->select_database($this->connection, $conf['database']);
+    } else {
+      if($conf['debug']) {
+        echo 'Database Connection Error (' . mysqli_connect_errno() . '): ' . mysqli_connect_error();
+      }
     }
-
   }
 
   private function setQueryBuilder()

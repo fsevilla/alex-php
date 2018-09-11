@@ -3,18 +3,10 @@
 namespace App\Controllers;
 
 use Core\Response;
-use Core\Request;
-
-require_once('Todo.php');
 
 use \App\Models\Todo;
 
 class TodosController {
-
-	public function __construct()
-	{
-
-	}
 
 	public function index($req)
 	{

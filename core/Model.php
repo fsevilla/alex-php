@@ -2,10 +2,10 @@
 
 namespace Core;
 
-use Core\Database\Model as DB;
+use Core\Database\DatabaseModel as DB;
 
 
-class Model extends DB {
+class Model {
 
 	protected $db;
 

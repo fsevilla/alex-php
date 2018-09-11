@@ -13,6 +13,7 @@ final class RoutesHandler {
 
 	public function __construct()
 	{
+		$this->routes = (object)[];
 		$this->routes->get = [];
 		$this->routes->put = [];
 		$this->routes->post = [];

@@ -4,11 +4,11 @@ namespace Core;
 
 class Autoload {
 
-	
 	private static $componentsFolder = 'Components';
 
 	private static $controllersNamespace = 'Controllers';
 
+	private static $max_scan_depth = 3;
 
 	public static function loadController($classPath)
 	{
@@ -67,8 +67,29 @@ class Autoload {
 		} catch (Exception $e ) {
 			Response::error(422, "Failed to load controller".$e->getMessage());
 		}
-
-
 	}
+
+	protected static function _require_all($dir, $depth=0) {
+		// TODO: review the need of DIRECTORY_SEPARATOR
+
+        if ($depth > self::$max_scan_depth) {
+            return;
+        }
+        // require all php files
+        $scan = glob("$dir/*");
+        foreach ($scan as $path) {
+            if (preg_match('/\.php$/', $path)) {
+                require_once $path;
+            }
+            elseif (is_dir($path)) {
+                self::_require_all($path, $depth+1);
+            }
+        }
+    }
+
+	public static function loadAllComponents() {
+        $dir = __DIR__.'/../app/'.self::$componentsFolder;
+        self::_require_all($dir, 0);
+    }
 
 }

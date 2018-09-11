@@ -53,4 +53,8 @@ require_once __DIR__.'/../db/drivers/driver.php';
  require_once __DIR__.'/../app/routes.php';
 
 
+ // Automatically load all component files
+ \Core\Autoload::loadAllComponents();
+
+
 

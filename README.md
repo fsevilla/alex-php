@@ -34,6 +34,20 @@ If you are here, I'd guess you are already familiar with GitHub. What are you wa
 git clone https://github.com/fsevilla/alex-php.git
 ```
 
+## Serving the Application
+You can either go with Docker or choose any Server app such as MAMP, XAMPP, WAMP or any other alternative. 
+
+But if you already have PHP installed, and want to serve this project from the gecko, simple go to the project's folder and run PHP as follows:
+```
+$ cd alex-php
+$ php -S localhost:8000
+```
+
+This will throw the message: `Listening on http://localhost:8000` and you are ready to visit such URL
+
+To kill the project simply press Ctrl+C to quit. 
+
+
 ### Configuring the Application
 This project has 3 configuration files under the config folder
 
@@ -220,7 +234,7 @@ If you have any thoughts of how to make this not only cooler but even more helpf
 
 
 ## Contributing
-This is still a green project. New, juts out of the box project. Contribution guidelines are not quite defined, yet. 
+This is still a green project. New, just out of the box project. Contribution guidelines are not quite defined, yet. 
 If, again, you have any great ideas for this want-to-become-a-framework project, create an issue, fork, drop an email, or simply hope for the best. I am really interested in hearing from you.
 
 
