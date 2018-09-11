@@ -4,41 +4,29 @@ use Core\Routing\Routes;
 
 Routes::get('', 'Homepage/HomePageController::view');
 
-// Routes::get('todos', 'Todos/TodosController::index');
-// Routes::get('todos/:id', 'Todos/TodosController::view');
-// Routes::post('todos', 'Todos/TodosController::create');
-// Routes::put('todos/:id', 'Todos/TodosController::update');
-// Routes::delete('todos/:id', 'Todos/TodosController::delete');
-
 Routes::crud('todos', 'Todos/TodosController');
+
 /*
- TODO: implement CRUD;
-	Eg:
+ * The crud method above is a shortcut for the following:
 
-	Routes::CRUD('lorem', 'TodosController')
+	Routes::get('todos', 'Todos/TodosController::index');
+	Routes::get('todos/:id', 'Todos/TodosController::view');
+	Routes::post('todos', 'Todos/TodosController::create');
+	Routes::put('todos/:id', 'Todos/TodosController::update');
+	Routes::delete('todos/:id', 'Todos/TodosController::delete');
 
-	It will create the following routes:
-	
-	get('todos/')
-	get('todos/:id')
-	post('todos/')
-	put('todos/:id')
-	delete('todos/:id');
+	// Methods index, view, create, update & delete should be available in the controller
 
+	Another alternative to define routes is to group'em as follows:
 
-	Controller must have the following methods defined:
+	Routes::group('todos', function() {
+	    Routes::get('', 'Todos/TodosController::index');
+	    Routes::get(':id', 'Todos/TodosController::view');
+	    Routes::post('', 'Todos/TodosController::create');
+	    Routes::put(':id', 'Todos/TodosController::update');
+	    Routes::delete(':id', 'Todos/TodosController::delete');
+	});
 
-	class TodosController {
-	
-		index() {}
+	// The above prefixes todos/ to all the paths within the function 
+*/
 
-		view() {} 
-
-		create() {}
-
-		update() {}
-
-		delete() {}
-
-	}
- */
