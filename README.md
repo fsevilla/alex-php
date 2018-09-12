@@ -1,9 +1,9 @@
 # ALEx PHP
-(Application Lightweight Expeditor) A simple, lightweight and customizable RESTful application starter. 
+A simple, lightweight and customizable quickstart project for building RESTful applications with PHP. 
 
 
 ## What is it?
-ALEx is a simple, configurable quickstart project for building RESTful applications with PHP. 
+ALEx is an Application Lightweight Expeditor built in PHP. It helps to quickly generate a RESTful application suitable for small and mid-size projects. 
 
 ## Why to come up with yet another Framework?
 While it is intended to become a Framework, I wouldn't label it as such, just yet. Wait for it. 
