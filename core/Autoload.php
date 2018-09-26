@@ -12,12 +12,13 @@ class Autoload {
 
 	public static function loadController($classPath)
 	{
-
-		include_once(__DIR__.'/../app/'.self::$componentsFolder.'/'.$classPath.'.php');
-
 		$className = self::getClassName($classPath);
 
 		$class = self::getControllerNameSpace().$className;
+
+		if(!class_exists($class)) {
+			include_once(__DIR__.'/../app/'.self::$componentsFolder.'/'.$classPath.'.php');
+		}
 
 		return new $class();
 
