@@ -24,6 +24,15 @@ class Model {
 	// Set created_at/updated_at values whith create/update method calls
 	protected $update_timestamps = true;
 
+	// Query object
+	protected $query = [
+		'where' => '',
+		'join' => '',
+		'sortBy' => '',
+		'order' => 'ASC',
+		'limit' => 10
+	];
+
 
 	public function __construct($id = NULL)
 	{
@@ -50,6 +59,11 @@ class Model {
 	public function find($id = NULL)
 	{
 		$q = "SELECT $this->select_fields FROM $this->table";
+
+		if($this->query['join']) {
+			$q .= $this->query['join'];
+		}
+
 		if($id)
 		{
 			$q .= " WHERE $this->id_field = '$id'";
@@ -196,6 +210,11 @@ class Model {
 		}
 
 		return false;
+	}
+
+	public function include($table, $on, $fields = '*') {
+		$this->select_fields = $fields;
+		$this->query['join'] = " INNER JOIN $table ON $on";
 	}
 
 }
