@@ -5,7 +5,7 @@ namespace Core;
 use Core\Database\DatabaseModel as DB;
 
 
-class Model {
+abstract class Model {
 
 	protected $db;
 
@@ -16,13 +16,19 @@ class Model {
 	protected $id_field = 'id';
 
 	// Fields in the SELECT query
-	protected $select_fields = '*';
+	protected $select_fields = ['*'];
 
 	// List of fields that can be updated in the Model/Database
 	protected $fields = [];
 
 	// Set created_at/updated_at values whith create/update method calls
 	protected $update_timestamps = true;
+
+	// Primary key for relations with other Models
+	protected $primary_key = '';
+
+	// Foreign keys and their relations
+	protected $foreign_keys = [];
 
 	// Query object
 	protected $query = [
@@ -38,9 +44,12 @@ class Model {
 	{
 		$this->db = DB::getInstance();
 
-		if($this->table === '')
-		{
+		if($this->table === '') {
 			$this->table = $this->className();
+		}
+
+		if($this->primary_key === '') {
+			$this->primary_key = $this->id_field;
 		}
 
 		if($id)
@@ -56,9 +65,24 @@ class Model {
 		 return strtolower($class);
 	}
 
+	public function tableName()
+	{
+		return $this->table;
+	}
+
+	public function getKey($tableName)
+	{
+		return $this->foreign_keys[$tableName] ? $this->foreign_keys[$tableName] : $this->id_field;
+	}
+
+	private function selectFieldsToStr()
+	{
+		return implode(', ', $this->select_fields);
+	}
+
 	public function find($id = NULL)
 	{
-		$q = "SELECT $this->select_fields FROM $this->table";
+		$q = "SELECT ".$this->selectFieldsToStr()." FROM $this->table";
 
 		if($this->query['join']) {
 			$q .= $this->query['join'];
@@ -66,7 +90,7 @@ class Model {
 
 		if($id)
 		{
-			$q .= " WHERE $this->id_field = '$id'";
+			$q .= " WHERE $this->table.$this->id_field = '$id'";
 		}
 
 		$rows = $this->db->getRows($q);
@@ -76,10 +100,11 @@ class Model {
 
 	public function count()
 	{
-		$q = "SELECT COUNT($this->id_field) AS count FROM $this->table";
+		$q = "SELECT COUNT($this->$table.$this->id_field) AS count FROM $this->table";
+
 		if($this->id)
 		{
-			$q .= " WHERE $this->id_field = '$this->id'";
+			$q .= " WHERE $this->$table.$this->id_field = '$this->id'";
 		}
 
 		$rows = $this->db->getRows($q);
@@ -160,7 +185,7 @@ class Model {
 			$values[$field] = $this->$field;
 		}
 		
-		$r = $this->db->update($this->id, $values, $this->table, $this->id_field);
+		$r = $this->db->update($this->id, $values, $this->table, $this->$table.$this->id_field);
 
 		if($r) {
 			return $this;
@@ -178,7 +203,7 @@ class Model {
 		
 		$valuesStr = implode(', ', $values);
 
-		$q = "UPDATE $this->table SET $valuesStr WHERE $this->id_field = '$this->id'";
+		$q = "UPDATE $this->table SET $valuesStr WHERE $this->$table.$this->id_field = '$this->id'";
 
 		return $this->db->query($q);
 	}
@@ -190,7 +215,7 @@ class Model {
 			$id = $this->id;
 		}
 
-		$q = "DELETE FROM $this->table WHERE $this->id_field = '$id'";
+		$q = "DELETE FROM $this->table WHERE $this->$table.$this->id_field = '$id'";
 
 		return $this->db->query($q);
 	}
@@ -204,7 +229,7 @@ class Model {
 
 		if($this->count())
 		{
-			$q 	= "DELETE FROM $this->table WHERE $this->id_field = '$this->id'";
+			$q 	= "DELETE FROM $this->table WHERE $this->$table.$this->id_field = '$this->id'";
 
 			return $this->db->query($q);
 		}
@@ -212,9 +237,26 @@ class Model {
 		return false;
 	}
 
-	public function include($table, $on, $fields = '*') {
-		$this->select_fields = $fields;
-		$this->query['join'] = " INNER JOIN $table ON $on";
+	// public function join($table, $on, $fields = '*') {
+	// 	$this->select_fields = $fields;
+	// 	$this->query['join'] = " INNER JOIN $table ON $on";
+	// }
+
+	public function include($class) {
+		$instance = new $class();
+
+		// If this is the first join, add the table name to the current fields to avoid conflicts
+		if($this->query['join'] === '') {
+			for ($i=0; $i < count($this->select_fields); $i++) { 
+				$this->select_fields[$i] = $this->tableName().'.'.$this->select_fields[$i];
+			}
+		}
+
+		for ($i=0; $i < count($instance->fields); $i++) { 
+			$this->select_fields[] = $instance->tableName().'.'.$instance->fields[$i];
+		}
+
+		$this->query['join'] .= " INNER JOIN ".$instance->tableName()." ON ".$this->tableName().".".$this->getKey($instance->tableName()). "= ".$instance->tableName().".".$instance->getKey($this->tableName());
 	}
 
 }
